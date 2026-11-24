@@ -1,0 +1,55 @@
+{
+  "manifestVersion": 2,
+  "id": "luban-chat",
+  "name": "Luban Chat",
+  "version": "0.1.0",
+  "description": "Run the Luban coding agent in a sidebar panel over ACP — no terminal, no borrowed agent slot.",
+  "engines": {
+    "orca": ">=1.4.247"
+  },
+  "execution": "trusted-worker",
+  "pluginApi": 1,
+  "main": "src/worker.ts",
+  "contributes": {
+    "panels": [
+      {
+        "id": "luban-chat",
+        "title": "Luban",
+        "icon": "bot",
+        "entry": "src/panel.tsx",
+        "ui": "components"
+      }
+    ],
+    "settings": [
+      {
+        "key": "acpCommand",
+        "title": "luban-acp command",
+        "type": "string",
+        "default": "",
+        "description": "Command line that starts the ACP server. Empty = ~/.local/bin/luban-acp, else `luban-acp` on PATH."
+      },
+      {
+        "key": "model",
+        "title": "Model",
+        "type": "string",
+        "default": "",
+        "description": "Model key passed as --model (see `luban --list-models`). Empty = whatever ~/.luban/config uses."
+      },
+      {
+        "key": "readOnly",
+        "title": "Read-only (plan mode)",
+        "type": "boolean",
+        "default": false,
+        "description": "Start the agent with --read-only: write tools and write commands are refused."
+      }
+    ]
+  },
+  "capabilities": [
+    {
+      "kind": "workspace:read"
+    },
+    {
+      "kind": "settings:own"
+    }
+  ]
+}

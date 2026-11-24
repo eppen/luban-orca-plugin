@@ -1,0 +1,15 @@
+{
+  "name": "luban-orca-plugin",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Dev-only package.json: Orca loads this plugin from orca-plugin.json; these deps exist only so tsc can type-check src/ against .orca/types. Nothing here is published or shipped to Orca.",
+  "scripts": {
+    "check": "tsc -p .",
+    "test": "orca plugin test .",
+    "validate": "orca plugin validate ."
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  }
+}

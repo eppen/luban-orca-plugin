@@ -73,18 +73,21 @@ catalog，也不发 npm 包（`package.json` 里的依赖只为 `tsc` 类型检�
 想用**仓库版本**的 Luban（而不是全局 npm 装的旧版）就把设置 `acpCommand` 写成
 `node /path/to/luban/dist/acp.js`，见下文「三项设置」。
 
-## 发版
-
-Orca 按 `vX.Y.Z` tag 取版本，所以一次发版是三处同步 + 一个 tag：
-
-```bash
-# 1. orca-plugin.json 的 version 与 package.json 的 version 改成同一个值
-git commit -am 'release v0.1.1' && git tag v0.1.1
-git push origin main --tags
-```
-
 改完代码后如果 worker 行为没变，先 `orca plugin restart local.luban-chat` —— worker 热重载会丢掉
 当前会话（进程归 worker 所有，这是有意的）。
+
+## 发版
+
+Orca 按 `vX.Y.Z` tag 取版本，所以一次发版是「两处 version + 一个 tag」：
+
+1. `orca-plugin.json` 的 `version` 与 `package.json` 的 `version` 改成同一个值；
+2. 提交、打 tag、推上去：
+
+   ```bash
+   git commit -am 'release v0.1.1'
+   git tag v0.1.1
+   git push origin main --tags
+   ```
 
 ## 三项设置
 

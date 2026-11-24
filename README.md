@@ -1,12 +1,37 @@
 # Luban Chat（Orca 本地插件）
 
+[![License](https://img.shields.io/badge/License-Apache--2.0-blue)](LICENSE)
+
 Orca 右侧栏的一个面板，把 Luban 当**原生聊天**用：正文、思考、工具行都是 Orca 自己的组件，
 每次写文件走面板内的 diff 权限卡片。底下是一个 ACP 子进程（`luban-acp`），协议与
-[Zed / JetBrains 那条路](../docs/acp.md) 完全同一份，不经过终端、也不占用任何内置 agent 槽位。
+[Zed / JetBrains 那条路](https://github.com/eppen/luban/blob/main/docs/acp.md) 完全同一份，
+不经过终端、也不占用任何内置 agent 槽位。
+
+这个仓库是 Luban 的配套插件（独立发版，manifest id `luban-chat`）。Luban 本体（CLI / VS Code 扩展 /
+`luban-acp`）在 [eppen/luban](https://github.com/eppen/luban)；Orca 的三条接入路线与全部踩坑记录在
+[docs/orca.md](https://github.com/eppen/luban/blob/main/docs/orca.md)。
+
+## 安装
+
+```bash
+orca plugin install eppen/luban-orca-plugin
+```
+
+Orca 会取**最新的 `vX.Y.Z` tag**（没有 tag 才退回默认分支），并固定到具体 commit。
+插件带 `execution: trusted-worker`（要起子进程），所以第一次会以 `approval_required` 退出，
+按提示带上 `--approve <fingerprint>` 重跑即可：
+
+```bash
+orca plugin install eppen/luban-orca-plugin --approve ap1-…
+orca plugin open local.luban-chat
+```
+
+想装某个具体版本就加 `@v0.1.0`；从本地目录装用 `orca plugin install ./`。
 
 ## 为什么不用「借槽位」
 
-`docs/orca.md` 里的路线一是把某个内置槽位（如 Charm Crush）的 Command 改成 `luban`，只能
+[Orca 文档](https://github.com/eppen/luban/blob/main/docs/orca.md) 里的路线一是把某个内置槽位
+（如 Charm Crush）的 Command 改成 `luban`，只能
 **在终端里**跑 REPL。想换成 Orca 的 chat surface 会被直接拒：
 
 ```
@@ -31,21 +56,31 @@ worker 自带进程，ACP 消息由我们自己翻成 Orca 的组件。代价是
 **没有构建步骤**：Orca 加载时自己把 `.ts` / `.tsx` 转译掉，改完保存即热重载。
 `npx tsc -p .` 只做类型检查，用的 typings 由 `orca plugin types .` 写进 `.orca/types/`（该目录不入库）。
 
-## 装上 / 开发
+## 开发
 
 ```bash
-cd orca-plugin
-orca plugin validate .          # manifest + 文件清单 + 能力声明
-orca plugin dev load .          # 作为开发插件加载（要代码执行能力，首次给 --approve <fingerprint>）
+git clone git@github.com:eppen/luban-orca-plugin.git
+cd luban-orca-plugin
+orca plugin validate .              # manifest + 文件清单 + 能力声明
+orca plugin dev load .              # 作为开发插件加载（要代码执行能力，首次给 --approve <fingerprint>）
 orca plugin open local.luban-chat   # 在右侧栏打开面板
-orca plugin dev watch .         # 边改边看日志和重载，Ctrl-C 卸载
+orca plugin dev watch .             # 边改边看日志和重载，Ctrl-C 卸载
 ```
 
-正式安装（不发 catalog，直接从文件夹或 Git 仓库装）：
+卸载：`orca plugin uninstall local.luban-chat`。本仓库之外没有别的安装形态 —— 不进 Orca 的
+catalog，也不发 npm 包（`package.json` 里的依赖只为 `tsc` 类型检查，`private: true`）。
+
+想用**仓库版本**的 Luban（而不是全局 npm 装的旧版）就把设置 `acpCommand` 写成
+`node /path/to/luban/dist/acp.js`，见下文「三项设置」。
+
+## 发版
+
+Orca 按 `vX.Y.Z` tag 取版本，所以一次发版是三处同步 + 一个 tag：
 
 ```bash
-orca plugin install ./orca-plugin            # 或 owner/repo[@ref]
-orca plugin uninstall local.luban-chat
+# 1. orca-plugin.json 的 version 与 package.json 的 version 改成同一个值
+git commit -am 'release v0.1.1' && git tag v0.1.1
+git push origin main --tags
 ```
 
 改完代码后如果 worker 行为没变，先 `orca plugin restart local.luban-chat` —— worker 热重载会丢掉

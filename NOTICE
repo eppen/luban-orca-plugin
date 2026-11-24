@@ -1,0 +1,13 @@
+Luban Chat (Orca plugin)
+Copyright 2026 eppen (liuhualiang)
+
+Licensed under the Apache License, Version 2.0. See the LICENSE file for
+the full license text.
+
+The Luban name and the publisher identity (eppen / liuhualiang) are not
+licensed under Apache-2.0. Section 6 of the License grants no trademark or
+branding rights.
+
+This plugin drives an external `luban-acp` process at runtime. It bundles no
+third-party code: the only dependencies in package.json (typescript,
+@types/node) are dev-time tools for `tsc` type checking and are never shipped.

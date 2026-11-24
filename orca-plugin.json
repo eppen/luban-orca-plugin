@@ -1,6 +1,7 @@
 {
   "manifestVersion": 2,
   "id": "luban-chat",
+  "publisher": "eppen",
   "name": "Luban Chat",
   "version": "0.1.0",
   "description": "Run the Luban coding agent in a sidebar panel over ACP — no terminal, no borrowed agent slot.",
